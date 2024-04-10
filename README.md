@@ -68,3 +68,5 @@ If you experience a lacking web-UI, please ensure to install all node_modules fo
 You can install the node_modules via: `yarn install --modules-folder src/main/resources/static` in the `/demo` folder.
 Please ensure you have installed `yarn`.
 
+See the [debugging docu](Debugging.md) to learn, how to debug the inspectit-ocelot agent locally.
+
