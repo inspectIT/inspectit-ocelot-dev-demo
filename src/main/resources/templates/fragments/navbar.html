@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Spring Boot Thymeleaf - Fragments</title>
+    <link th:href="@{/node_modules/bootstrap/dist/css/bootstrap.css}" rel="stylesheet" />
+</head>
+<body>
+    <div th:fragment="navbar" style="width: 100%">
+
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="title-image-wrapper">
+                <img class="title-image" src="/images/ocelot_head_sil_logo.svg"/>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav navbar-left">
+                        <li class="nav-item active">
+                            <a class="navbar-item-white" href="/">Homepage <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="navbar-item-white" href="/configuration">HTML Editor</a>
+                        </li>
+                </ul>
+                <ul class="navbar-nav navbar-middle">
+                    <li class="nav-item active">
+                        <a class="navbar-item-white" href="/greeting">Greeting</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="navbar-item-white" href="/formdata">Form Data</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav navbar-right">
+                    <li class="nav-item active">
+                        <a class="navbar-item-white" href="/eum-editor">EUM Configuration</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</body>

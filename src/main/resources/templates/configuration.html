@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Configuration</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/node_modules/bootstrap/dist/css/bootstrap.css}" rel="stylesheet" />
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <style>
+        #title {
+            position: absolute;
+            top: 11%;
+            right: 0;
+            bottom: 0;
+            left: 5%;
+        }
+
+        #buttons {
+            position: absolute;
+            top: 81%;
+            right: 0;
+            bottom: 0;
+            left: 5%;
+        }
+
+        #editor {
+            position: absolute;
+            top: 24%;
+            right: 5%;
+            bottom: 20%;
+            left: 5%;
+        }
+    </style>
+</head>
+<body>
+
+    <script th:src="@{/node_modules/ace-builds/src-noconflict/ace.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/node_modules/jquery/dist/jquery.js}" type="text/javascript"></script>
+    <script th:src="@{/node_modules/bootstrap/dist/js/bootstrap.bundle.js}" type="text/javascript" charset="utf-8"></script>
+
+    <div class="navbar" th:insert="fragments/navbar :: navbar"></div>
+    <div id="title">
+        <h1 th:text="${title}"></h1>
+    </div>
+
+    <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
+        <div class="toast" style="position: absolute; top: 0; right: 0;" id="toast-wrapper">
+          <div class="toast-header">
+            <strong class="mr-auto" id="toast-title"></strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="toast-body" id="toast-body"></div>
+        </div>
+      </div>
+
+    <div class="dropdown config-template-dropdown">
+        <button class="btn btn-info dropdown-toggle config-template-dropdown-button" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Choose a website
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="#">Greeting</a>
+          <a class="dropdown-item" href="#">Formdata</a>
+        </div>
+      </div>
+
+    <div id="editor"></div>
+
+    <div id="buttons" class="button-wrapper">
+        <button type="button" class="btn btn-warning button-left" onclick="loadHTML()">Load HTML</button>
+        <button type="button" class="btn btn-success button-left" id="saveHTMLButton">Save HTML</button>
+        <button type="button" class="btn btn-warning button-left" id="resetHTMLButton">Reset HTML</button>
+    </div>
+
+    <script id="editorScript">
+        const editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/html");
+    </script>
+    <script id="loadHTMLScript">
+        function loadHTML(){
+            $.get(getDropDownValue(), function (data) {
+                editor.setValue(data);
+            });
+            successNotificaiton("HTML successfully loaded!");
+        }
+    </script>
+    <script id="saveHTMLScript">
+        $(function() {
+            $("#saveHTMLButton").click(function(evt) {
+                evt.preventDefault();
+                saveHTML(getDropDownValue());
+            });
+        });
+        function saveHTML(site) {
+            $.ajax({
+                url : '/save?sitePath=' + site,
+                dataType : 'html',
+                contentType : 'application/json; charset=UTF-8',
+                type : 'POST',
+                data: editor.getValue(),
+                error: failNotificaiton("Failed saving HTML!"),
+                success: successNotificaiton("HTML was successfully saved!")
+            });
+        }
+    </script>
+    <script id="resetHTMLScript">
+        $(function() {
+            $("#resetHTMLButton").click(function(evt) {
+                evt.preventDefault();
+                resetHTML(getDropDownValue());
+            });
+        });
+        function resetHTML(site) {
+            $.ajax({
+                url : '/reset?sitePath=' + site,
+                dataType : 'text',
+                contentType : 'text/plain; charset=UTF-8',
+                type : 'GET',
+                error: failNotificaiton("Failed resetting HTML!"),
+                success: successNotificaiton("HTML was successfully reset!")
+            });
+            $.get(getDropDownValue(), function (data) {
+                editor.setValue(data);
+            });
+            ;
+        }
+    </script>
+    <script>
+        $(".dropdown-menu a").click(function(){
+            var selText = $(this).text();
+            document.getElementById("dropdownMenuButton").innerHTML = selText;
+        });
+    </script>
+    <script>
+        const getDropDownValue = () => {
+            const value = document.getElementById("dropdownMenuButton").innerHTML;
+            if(value) {
+                return value.toLocaleLowerCase();
+            }
+            return "";
+        }
+    </script>
+    <script>
+        const successNotificaiton = (message) => {
+            document.getElementById("toast-title").innerHTML = "Success!";
+            document.getElementById("toast-body").innerHTML = message;
+            document.getElementById("toast-wrapper").classList.remove('success');
+            document.getElementById("toast-wrapper").classList.remove('error');
+            document.getElementById("toast-wrapper").classList.add('success');
+            $(".toast").toast({
+                delay:3000
+            });
+            $(".toast").toast('show');
+        }
+
+        const failNotificaiton = (message) => {
+            document.getElementById("toast-title").innerHTML = "Error!";
+            document.getElementById("toast-body").innerHTML = message;
+            document.getElementById("toast-wrapper").classList.remove('success');
+            document.getElementById("toast-wrapper").classList.remove('error');
+            document.getElementById("toast-wrapper").classList.add('error');
+            $(".toast").toast({
+                delay:3000
+            });
+            $(".toast").toast('show');
+        }
+    </script>
+</body>
+</html>

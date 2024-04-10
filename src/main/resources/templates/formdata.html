@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>FormData</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/node_modules/bootstrap/dist/css/bootstrap.css}" rel="stylesheet" />
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+
+    <script src="http://localhost:8080/boomerang/boomerang.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/rt.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/navtiming.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/auto-xhr.js"></script>
+    <script src="http://localhost:8000/boomerang/plugins/boomerang-opentelemetry.js"></script>
+
+    <script>
+        BOOMR.init({
+            beacon_url: 'http://localhost:8080/beacon',
+            OpenTelemetry: {
+                samplingRate: 1.0, // an optional sampling rate
+                corsUrls: ['https://my.backend.com'],
+                consoleOnly: false, // an optional flag whether spans should only be printed to the console
+                collectorConfiguration: {
+                    // url: 'http://localhost:4317', // an optional url for an OpenTelemetry collector
+                    headers: {}, // an optional object containing custom headers to be sent with each request
+                    concurrencyLimit: 10, // an optional limit on pending requests
+                },
+                plugins_config: {
+                    instrument_xhr: {
+                        enabled: true,
+                        path: "",
+                        applyCustomAttributesOnSpan: (span, request) => {
+                            span.setAttribute("formData", "myData")
+
+                        }, //A method with the following structure: (span: Span, xhr: XMLHttpRequest) => { },
+                        propagateTraceHeaderCorsUrls: [],
+                        ignoreUrls: [],
+                        clearTimingResources: false,
+                    },
+                    instrument_fetch: {
+                        enabled: true,
+                        path: "",
+                        applyCustomAttributesOnSpan: (span, request) => {
+
+                        },
+                        propagateTraceHeaderCorsUrls: [],
+                        ignoreUrls: [],
+                        clearTimingResources: false
+                    }
+                },
+                exporter: {
+                    maxQueueSize: 100,
+                    maxExportBatchSize: 10,
+                    scheduledDelayMillis: 500,
+                    exportTimeoutMillis: 30000,
+                },
+                commonAttributes: {
+                },
+                serviceName: () => BOOMR.getVar("page_name"),
+                prototypeExporterPatch: true,
+                propagationHeader: "TRACE_CONTEXT"
+            }
+        });
+        BOOMR.addVar("page_name", "frontend");
+    </script>
+</head>
+<body>
+    <div class="navbar" th:insert="fragments/navbar :: navbar"></div>
+    <div class="content-wrapper">
+        <h1 >Form Data</h1>
+        <p>Test some requests here!</p>
+        <div>
+            <div class="input-wrapper">
+                <div class="form-group textare-wrapper">
+                    <textarea class="form-control" id="textarea" rows="3" placeholder="Enter any text..."></textarea>
+                </div>
+                <div class="form-group textare-wrapper float-right">
+                    <textarea class="form-control" disabled rows="3" id="textareaTarget"></textarea>
+                </div>
+            </div>
+            <button class="btn btn-success" onclick="submitForm()">Submit</button>
+        </div>
+    </div>
+
+    <script th:src="@{/node_modules/jquery/dist/jquery.js}" type="text/javascript"></script>
+
+    <script id="submitForm">
+        function submitForm() {
+            // we gather the data to send
+            const payload = textarea.value;
+
+            // we send the data to the server, now
+            $.ajax({
+                url : '/formdata',
+                dataType : 'text',
+                contentType : 'text/plain; charset=UTF-8',
+                type : 'POST',
+                data: payload,
+                success: function(data) {
+                    $("#textareaTarget").val(data);
+                }
+            });
+            const OT = window.BOOMR.plugins.OpenTelemetry;
+            OT.addVarToSpan("myFormData","importantData");
+        }
+    </script>
+</body>
+</html>

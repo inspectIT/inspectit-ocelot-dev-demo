@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>EUM-Server Config Editor</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link th:href="@{/node_modules/bootstrap/dist/css/bootstrap.css}" rel="stylesheet" />
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .header-container{
+            background: #de6f00;
+            color: #fff;
+            min-height: 50px;
+            padding: 8px 0;
+            position: fixed;
+            width: 100%;
+            z-index: 9999;
+            transform: translateZ(0);
+         }
+
+        .title-image-wrapper {
+           display:inline-block;
+           margin-right:20px;
+           vertical-align: middle;
+        }
+
+        .title-wrapper {
+           display:inline-block;
+           vertical-align: middle;
+        }
+
+         .button-left {
+            margin-right: 2%;
+         }
+
+         .button-left-large {
+            width: 140px;
+            margin-left: 2%;
+         }
+
+         .success {
+             background-color: rgba(0,128,0, 0.5);
+             border: none;
+        }
+
+        .error {
+            background-color: rgba(205,0,0, 0.5);
+            border: none;
+        }
+
+        .toast-header {
+            border: none;
+            background-color: rgba(167, 134, 134, 0);
+            color: #505050;
+        }
+
+        .title-image {
+             width: 66px;
+             height: 58.46px;
+        }
+
+        .status-wrapper {
+            margin-bottom: 0.25rem;
+        }
+
+        #reload {
+            font-family: Lucida Sans Unicode;
+            width: 10px;
+        }
+
+        .control-button {
+            width: 60px;
+            float: right;
+        }
+
+        .content {
+            display: flex;
+            padding: 4rem 5rem 2rem;
+            flex-grow: 1;
+            flex-direction: column;
+        }
+
+        #editor {
+            flex-grow: 1;
+            margin: 1rem 0;
+        }
+
+        #ace-editor {
+            width: 100%;
+            height: 100%;
+        }
+
+        .editor-button-wrapper {
+        }
+
+        .log-container {
+            margin-top: 1rem;
+            border: 1px solid #d8d8d8;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .logs {
+            margin-top: 0.5rem;
+            background-color: #002240;
+            color: #d8d8d8;
+            font-family: monospace;
+            padding: 0.25rem;
+            height: 15rem;
+            overflow-y: scroll;
+            white-space: pre;
+        }
+
+    </style>
+
+</head>
+
+<body class="text-justify">
+    <script th:src="@{/node_modules/jquery/dist/jquery.js}" type="text/javascript"></script>
+    <script th:src="@{/node_modules/ace-builds/src-noconflict/ace.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/node_modules/bootstrap/dist/js/bootstrap.bundle.js}" type="text/javascript" charset="utf-8"></script>
+    <script th:src="@{/node_modules/axios/dist/axios.js}" type="text/javascript" charset="utf-8"></script>
+    <script>
+        $(document).ready(function(){
+            $(".toast").toast('show');
+        });
+
+        const getConfigFile = () => {
+            axios
+                .get('/eum/file')
+                .then((response) => {
+                const configFile = response.data;
+                    if (configFile) {
+                        editor.setValue(configFile)
+                        successNotificaiton("Configuration loaded!")
+                    }
+                })
+                .catch((error) => {
+                    failNotificaiton("Could not fetch configuration file.");
+                });
+        }
+
+        const getDefaultConfigFile = () => {
+            axios
+                .get('/eum/default')
+                .then((response) => {
+                    const configFile = response.data;
+                        if (configFile) {
+                            editor.setValue(configFile)
+                            successNotificaiton("Default configuration loaded!")
+                        }
+                    })
+                .catch((error) => {
+                    failNotificaiton("Could not fetch default configuration file.");
+                });
+        }
+
+        const updateConfigFile = () => {
+            const file = editor.getValue();
+            const headers = {
+                'Content-Type': 'application/json'
+            }
+            axios
+                .post('/eum/file', {content: file})
+                .then(successNotificaiton("Configuration updated!"))
+                .catch((error) => {
+                    failNotificaiton("Could not update configuration file.");
+                });
+        }
+
+        const applyConfig = () => {
+            axios
+                .post('/eum/apply')
+                .then(successNotificaiton("Server is restarting!"))
+                .catch((error) => {
+                    failNotificaiton("Could not apply configuration file.");
+                });
+        }
+
+        const startServer = () => {
+            axios
+                .post('/eum/start')
+                .then(successNotificaiton("Server is starting!"))
+                .catch((error) => {
+                    failNotificaiton("Could starting Server!");
+                });
+        }
+
+        const stopServer = () => {
+            axios
+                .post('/eum/stop')
+                .then(successNotificaiton("Server is stopping!"))
+                .catch((error) => {
+                    failNotificaiton("Could not stop Server!");
+                });
+        }
+
+        const getServerStatus = () => {
+            axios
+                .get('/eum/status')
+                .then((response) => {
+                    const status = response.data;
+                    updateServerStatus(status);
+                  })
+                .catch((error) => {
+                    updateServerStatus(false);
+                });
+        }
+
+        const updateServerStatus = (status) => {
+            console.log(status)
+            const element = document.getElementById("status");
+            const textElement = document.getElementById("status-text");
+            if(status) {
+                textElement.innerHTML = "Server-Status: Online";
+                element.classList.remove('btn-success');
+                element.classList.remove('btn-danger');
+                element.classList.add('btn-success');
+            } else {
+                textElement.innerHTML = "Server-Status: Offline";
+                element.classList.remove('btn-success');
+                element.classList.remove('btn-danger');
+                element.classList.add('btn-danger');
+            }
+        }
+
+        const successNotificaiton = (message) => {
+            document.getElementById("toast-title").innerHTML = "Success!";
+            document.getElementById("toast-body").innerHTML = message;
+            document.getElementById("toast-wrapper").classList.remove('success');
+            document.getElementById("toast-wrapper").classList.remove('error');
+            document.getElementById("toast-wrapper").classList.add('success');
+
+            $(".toast").toast('show');
+        }
+
+        const failNotificaiton = (message) => {
+            document.getElementById("toast-title").innerHTML = "Error!";
+            document.getElementById("toast-body").innerHTML = message;
+            document.getElementById("toast-wrapper").classList.remove('success');
+            document.getElementById("toast-wrapper").classList.remove('error');
+            document.getElementById("toast-wrapper").classList.add('error');
+            $(".toast").toast('show');
+        }
+
+        const toggleLogs = () => {
+            $(".logs").toggle();
+        };
+
+        const updateLogs = () => {
+            console.log("update logs");
+            $.get("/eum/logs", (data) => {
+                const logArea = $(".logs");
+
+                logArea.html(data);
+
+                if(logArea.length) {
+                    logArea.scrollTop(logArea[0].scrollHeight - logArea.height());
+                }
+            });
+        };
+
+        setInterval(updateLogs, 2500);
+    </script>
+
+    <div class="navbar" th:insert="fragments/navbar :: navbar"></div>
+
+    <div aria-live="polite" aria-atomic="true" style="position: relative;">
+        <div class="toast" style="position: absolute; top: 25px; right: 0;" id="toast-wrapper" data-delay="3000">
+            <div class="toast-header">
+                <strong class="mr-auto" id="toast-title"></strong>
+                <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body" id="toast-body"></div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>EUM Server Configuration</h2>
+
+        <div>
+            <div class="status-wrapper">
+                <button id="status" type="button" class="btn btn-danger button-left" onclick="getServerStatus()" style="width: 220px;">
+                    <span id="status-text">
+                      Server-Status: Offline
+                    </span>
+                    <span id="reload">
+                        &#x21bb;
+                    </span>
+                </button>
+            </div>
+
+            <div style="display:flex; flex-direction: row; justify-content: space-between; width: 220px;">
+
+                <button type="button" class="btn btn-success button-left control-button" onclick="startServer()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-play" viewBox="0 0 16 16">
+                        <path d="M10.804 8L5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 0 1 0 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="btn btn-info button-left control-button" onclick="applyConfig()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-bootstrap-reboot" viewBox="0 0 16 16">
+                        <path d="M1.161 8a6.84 6.84 0 1 0 6.842-6.84.58.58 0 0 1 0-1.16 8 8 0 1 1-6.556 3.412l-.663-.577a.58.58 0 0 1 .227-.997l2.52-.69a.58.58 0 0 1 .728.633l-.332 2.592a.58.58 0 0 1-.956.364l-.643-.56A6.812 6.812 0 0 0 1.16 8z"/>
+                        <path d="M6.641 11.671V8.843h1.57l1.498 2.828h1.314L9.377 8.665c.897-.3 1.427-1.106 1.427-2.1 0-1.37-.943-2.246-2.456-2.246H5.5v7.352h1.141zm0-3.75V5.277h1.57c.881 0 1.416.499 1.416 1.32 0 .84-.504 1.324-1.386 1.324h-1.6z"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="btn btn-danger button-left control-button" onclick="stopServer()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-app" viewBox="0 0 16 16">
+                        <path d="M11 2a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3h6zM5 1a4 4 0 0 0-4 4v6a4 4 0 0 0 4 4h6a4 4 0 0 0 4-4V5a4 4 0 0 0-4-4H5z"/>
+                    </svg>
+                </button>
+
+            </div>
+        </div>
+
+        <div class="log-container">
+            <button type="button" class="btn btn-primary" onclick="toggleLogs()">Show EUM-Server Logs</button>
+
+            <div class="logs" style="display: none;">asdasdasd</div>
+        </div>
+
+        <div id="editor">
+            <div id="ace-editor"></div>
+        </div>
+
+        <div class="editor-button-wrapper">
+            <button type="button" class="btn btn-success button-left" onclick="updateConfigFile()">Save</button>
+            <button type="button" class="btn btn-warning button-left-large" onclick="getConfigFile()">Load last saved</button>
+        </div>
+
+    </div>
+
+    <script id="editorScript">
+            const editor = ace.edit("ace-editor");
+            editor.setTheme("ace/theme/cobalt");
+            editor.session.setMode("ace/mode/yaml");
+
+            // resizes the editor when its wrapper is changed
+            new ResizeObserver(() => {
+                editor.resize();
+            }).observe($("#editor")[0]);
+
+            getConfigFile();
+    </script>
+</body>
+</html>

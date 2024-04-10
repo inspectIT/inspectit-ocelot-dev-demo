@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Homepage</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link th:href="@{/styles/main.css}" rel="stylesheet" />
+    <link th:href="@{/node_modules/bootstrap/dist/css/bootstrap.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="navbar" th:insert="~{fragments/navbar :: navbar}"></div>
+<div class="content-wrapper">
+<h1>Welcome!</h1>
+    <p style="font-size: 1.5em;">Welcome to Novatec's EUM-Server training! This page provides you with a short description of what you can find here.</p>
+    <table style="margin-top: 30px;">
+        <tr >
+            <td class="homepage-row"><span style="font-weight:bold">HTML Editor:</span></td>
+            <td class="homepage-row"><span style="font-size: 1.2em;"> You will find a small Text-Editor which you can use to edit both the greeting and the form data page.</span></td>
+        </tr>
+        <tr class="homepage-row">
+            <td class="homepage-row"><span style="font-weight:bold">Greeting:</span></td>
+            <td class="homepage-row"><span style="font-size: 1.2em;"> On this page you can find an image and a button. When the button is pushed, a new image will be loaded.</span></td>
+        </tr>
+        <tr class="homepage-row">
+            <td class="homepage-row"><span style="font-weight:bold">Form Data:</span></td>
+            <td class="homepage-row"><span style="font-size: 1.2em;"> This page contains two text fields. Enter a text in the left field and submit it with the submit button.
+                Doing so will send a request to the server which will return your initial text in caps.</span></td>
+        </tr>
+        <tr class="homepage-row">
+            <td class="homepage-row"><span style="font-weight:bold">EUM Configuration:</span></td>
+            <td class="homepage-row"><span style="font-size: 1.2em;"> Use this page to control the EUM-Server. You can start, stop and restart the server aswell as
+                see if the server is currently running. Use the YAML-Editor on this page to edit the eum server's configuration.</span></td>
+        </tr>
+    </table>
+    <h3>Stuck?</h3>
+    <p style="font-size: 1.2em;">Feel free to ask our coaches or check the <a href="https://inspectit.github.io/inspectit-ocelot/docs/enduser-monitoring/eum-server-configuration" target="_blank">EUM-Server's documentation</a>!</p>
+</div>
+</body>
+</html>

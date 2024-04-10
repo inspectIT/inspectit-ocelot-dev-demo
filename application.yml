@@ -1,0 +1,64 @@
+# exporter configuration for
+inspectit-eum-server:
+
+  # metrics exporter settings
+  exporters:
+    metrics:
+      influx:
+        # Determines whether the influx exporter is enabled.
+        enabled: ENABLED
+
+        # the export interval of the metrics.
+        export-interval: 15s
+
+        # The http url of influx.
+        # If this property is not set, the influx-exporter will not be started.
+        endpoint: "http://localhost:8086"
+
+        # The database to write to.
+        # If this property is not set, the influx-exporter will not be started.
+        database: "inspectit"
+
+        # The username to be used to connect to the influxDB.
+        username: admin
+
+        # The password to be used to connect to the influxDB.
+        password: admin
+
+        # The retention policy to write to.
+        # If this property is not set, the influx-exporter will not be started.
+        retention-policy: "autogen"
+
+        # If true, the specified database will be created with the autogen retention policy.
+        create-database: true
+
+        # If disabled, the raw values of each counter will be written to the InfluxDB on each export.
+        # When enabled, only the change of the counter in comparison to the previous export will be written.
+        # This difference will only be written if the counter has changed (=the difference is non-zero).
+        # This can greatly reduce the total data written to influx and makes writing queries easier.
+        counters-as-differences: true
+
+        # The size of the buffer for failed batches.
+        # E.g. if the exportInterval is 15s and the buffer-size is 4, the export will keep up to one minute of data in memory.
+        buffer-size: 40
+
+    tracing:
+      # Specifies whether client IP addresses which are added to spans should be masked.
+      mask-span-ip-addresses: false
+      # service name for all exported spans.
+      service-name: "demo-service"
+
+      jaeger:
+        # If jaeger exporter for the OT received spans is enabled.
+        enabled: DISABLED
+
+        # The transport protocol
+        protocol: http/thrift
+
+        endpoint: "localhost:14268/api/traces"
+        #endpoint: "localhost:16686/api/traces"
+
+      otlp:
+        enabled: ENABLED
+        endpoint: "localhost:4317"
+        protocol: grpc

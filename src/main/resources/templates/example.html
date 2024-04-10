@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <title>Greeting</title>
+    <script src="http://localhost:8080/boomerang/boomerang.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/rt.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/navtiming.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/auto-xhr.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/boomerang-opentelemetry.js"></script>
+
+    <script>
+        BOOMR.init({
+            beacon_url: 'http://localhost:8080/beacon/',
+            OpenTelemetry: {
+                plugins_config: {
+                    instrument_document_load: {
+                        enabled: true,
+                        recordTransaction: true,
+                        exporterDelay: 20
+                    }
+                }
+            }
+        });
+    </script>
+</head>
+<body>
+
+</body>
+</html>
