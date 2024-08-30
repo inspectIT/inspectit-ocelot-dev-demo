@@ -10,8 +10,12 @@ Use this configuration to just run the demo application with an inspectit attach
 ---
 
 To debug an inspectit agent, you have to download the [inspectit-ocelot repository](https://github.com/inspectIT/inspectit-ocelot).
+After that, build a local agent.jar by running `gradle assemble` in the _inspectit-ocelot-agent_ module.
+You will find the jar in the build folder of the agent module.
 
-Adjust your demo run configuration like this:
+Please use the **path to your locally build agent.jar** in your start configuration while debugging the agent.
+
+Then, adjust your demo run configuration like this:
 
 ![image](docs/debug-demo.png)
 
