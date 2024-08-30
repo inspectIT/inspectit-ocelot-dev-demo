@@ -23,10 +23,13 @@ public class GreetingController {
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         this.randomService.getUser();
+        incrementCounter();
+        return "greeting";
+    }
+
+    private void incrementCounter() {
         counter++;
         System.out.println("REQUEST " + counter);
-
-        return "greeting";
     }
 
     @GetMapping(value="/changePicture", produces="application/json")
