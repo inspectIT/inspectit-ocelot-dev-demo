@@ -27,12 +27,15 @@ public class GreetingController extends MyAbstract implements MyInterface {
     @GetMapping("/greeting")
     public String greeting(@RequestParam(name="name", required=false, defaultValue="World") String name, Model model) {
         this.randomService.getUser();
-        counter++;
-        System.out.println("REQUEST " + counter);
+        incrementCounter();
         testGreeting();
         myMethod();
-
         return "greeting";
+    }
+
+    private void incrementCounter() {
+        counter++;
+        System.out.println("REQUEST " + counter);
     }
 
     @WithSpan
