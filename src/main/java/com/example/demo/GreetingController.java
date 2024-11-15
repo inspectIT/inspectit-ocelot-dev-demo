@@ -1,8 +1,12 @@
 package com.example.demo;
 
+import com.example.demo.service.MyAbstract;
+import com.example.demo.service.MyInterface;
 import com.example.demo.service.RandomService;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,7 +17,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Controller
-public class GreetingController {
+public class GreetingController extends MyAbstract implements MyInterface {
 
     @Autowired
     private RandomService randomService;
@@ -25,8 +29,16 @@ public class GreetingController {
         this.randomService.getUser();
         counter++;
         System.out.println("REQUEST " + counter);
+        testGreeting();
+        myMethod();
 
         return "greeting";
+    }
+
+    @WithSpan
+    private void testGreeting() {
+        System.out.println("REQUEST TEST " + counter);
+        System.currentTimeMillis();
     }
 
     @GetMapping(value="/changePicture", produces="application/json")
@@ -49,6 +61,11 @@ public class GreetingController {
     @GetMapping(value = "/exception")
     public ResponseEntity<String> throwException() {
         throw new RuntimeException("EXCEPTION ON PURPOSE");
+    }
+
+    @Override
+    public void myMethod() {
+        System.out.println("MY METHOD");
     }
 }
 
