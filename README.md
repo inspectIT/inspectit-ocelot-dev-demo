@@ -3,7 +3,7 @@ Demo application for local development.
 
 Currently, this project uses the following versions:
 - inspectit-ocelot-agent & configuration-server: 2.6.6
-- EUM-server: 2.6.1
+- EUM-server: 2.6.2
 - Demo Spring version: 3.2.0
 
 ---
@@ -35,7 +35,7 @@ for the web-UI.
 Start the configuration-server via `java -jar inspectit-ocelot-configurationserver-2.6.6.jar`.
 You can reach the UI on port 8090.
 
-Start the EUM-server via `java -jar inspectit-ocelot-eum-server.2.6.1.jar`
+Start the EUM-server via `java -jar inspectit-ocelot-eum-server.2.6.2.jar`
 The server should automatically apply the [application.yml](application.yml), 
 which enables the influx-exporter for metrics and the OTLP-exporter for traces.
 The EUM-server also provides the [boomerang-opentelemetry-plugin](https://github.com/NovatecConsulting/boomerang-opentelemetry-plugin).
