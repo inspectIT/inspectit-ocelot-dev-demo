@@ -17,7 +17,7 @@ inspectit-eum-server:
 
         # The database to write to.
         # If this property is not set, the influx-exporter will not be started.
-        database: "inspectit"
+        database: "eum"
 
         # The username to be used to connect to the influxDB.
         username: admin
@@ -47,16 +47,6 @@ inspectit-eum-server:
       mask-span-ip-addresses: false
       # service name for all exported spans.
       service-name: "demo-service"
-
-      jaeger:
-        # If jaeger exporter for the OT received spans is enabled.
-        enabled: DISABLED
-
-        # The transport protocol
-        protocol: http/thrift
-
-        endpoint: "localhost:14268/api/traces"
-        #endpoint: "localhost:16686/api/traces"
 
       otlp:
         enabled: ENABLED

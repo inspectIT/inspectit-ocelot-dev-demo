@@ -5,12 +5,6 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
-  # enable jaeger receiver through all protocols except thrift_compact, which is used by ACE. inspectIT will (as of v1.14.0) export through the thrift_http protocol
-  jaeger:
-    protocols:
-      grpc:
-      thrift_binary:
-      thrift_http:
 
 exporters:
   # configure jaeger exporter
@@ -18,13 +12,11 @@ exporters:
     endpoint: jaeger:4317
     tls:
       insecure: true
-  # enable logging exporter
-  logging:
+  debug:
+    verbosity: detailed
 
 processors:
   batch:
-    # increase timeout to batch application and ACE server spans
-    timeout: 2s
 
   transform/extract-span-duration:
     #error_mode: ignore
@@ -45,17 +37,12 @@ service:
   extensions: [pprof, zpages, health_check]
   pipelines:
     traces:
-      receivers: [otlp, jaeger]
+      receivers: [otlp]
       processors: [batch, transform/extract-span-duration]
-      exporters: [otlp/jaeger, logging]
+      exporters: [otlp/jaeger, debug]
     metrics:
       receivers: [otlp]
-      exporters: [logging]
+      exporters: [debug]
     logs:
       receivers: [otlp]
-      exporters: [logging]
-
-  # enable debug logging
-  telemetry:
-    logs:
-      level: "info"
+      exporters: [debug]
