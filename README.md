@@ -2,7 +2,7 @@
 Demo application for local development. 
 
 Currently, this project uses the following versions:
-- inspectit-ocelot-agent & configuration-server: 2.6.6
+- inspectit-ocelot-agent & configuration-server: 2.6.7
 - EUM-server: 2.6.2
 - Demo Spring version: 3.2.0
 
@@ -18,7 +18,7 @@ This folder contains recent releases of the
 
 This folder contains a `docker-compose.yml` file, which starts the following containers:
 - OpenTelemetry-Collector (Receive metrics & traces)
-- Jaeger (Receive & view traces)
+- Jaeger (View traces)
 - InfluxDB (Receive metrics)
 - Grafana (View metrics)
 
@@ -32,7 +32,7 @@ for the web-UI.
 
 ### inspectit-ocelot
 
-Start the configuration-server via `java -jar inspectit-ocelot-configurationserver-2.6.6.jar`.
+Start the configuration-server via `java -jar inspectit-ocelot-configurationserver-2.6.7.jar`.
 You can reach the UI on port 8090.
 
 Start the EUM-server via `java -jar inspectit-ocelot-eum-server.2.6.2.jar`
@@ -55,7 +55,7 @@ You can start the demo application without an attached ocelot agent just like ev
 
 To start the application with an attached ocelot agent, you have to:
 - build a demo.jar via `gradle assemble`
-- start the demo via `java -javaagent:"<absolute-path-to-your-project>\inspectit-ocelot-dev-demo\inspectit-ocelot\inspectit-ocelot-agent-2.6.6.jar" -Dinspectit.service-name=my-demo-agent -Dinspectit.config.http.url=http://localhost:8090/api/v1/agent/configuration -jar <absolute-path-to-your-project>\inspectit-ocelot-dev-demo\build\libs\com.example.demo-0.0.1-SNAPSHOT.jar `
+- start the demo via `java -javaagent:"<absolute-path-to-your-project>\inspectit-ocelot-dev-demo\inspectit-ocelot\inspectit-ocelot-agent-2.6.7.jar" -Dinspectit.service-name=my-demo-agent -Dinspectit.config.http.url=http://localhost:8090/api/v1/agent/configuration -jar <absolute-path-to-your-project>\inspectit-ocelot-dev-demo\build\libs\com.example.demo-0.0.1-SNAPSHOT.jar `
 
 You can reach the main-page at http://localhost:8081
 
