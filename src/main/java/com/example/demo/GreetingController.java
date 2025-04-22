@@ -5,6 +5,10 @@ import com.example.demo.service.MyInterface;
 import com.example.demo.service.RandomService;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import jakarta.servlet.http.HttpServletRequest;
+//import org.apache.logging.log4j.Logger;
+//import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +21,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Controller
 public class GreetingController extends MyAbstract implements MyInterface {
+
+    //private static final Logger log = LogManager.getLogger(GreetingController.class);
+    private static final Logger log = LoggerFactory.getLogger(GreetingController.class);
 
     @Autowired
     private RandomService randomService;
@@ -39,7 +46,7 @@ public class GreetingController extends MyAbstract implements MyInterface {
 
     @WithSpan
     private void testGreeting() {
-        System.out.println("REQUEST TEST " + counter);
+        log.info("REQUEST TEST {}", counter);
         System.currentTimeMillis();
     }
 

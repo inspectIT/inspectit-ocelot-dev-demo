@@ -5,6 +5,8 @@ receivers:
         endpoint: 0.0.0.0:4317
       http:
         endpoint: 0.0.0.0:4318
+  influxdb:
+    endpoint: 0.0.0.0:8088
 
 exporters:
   # configure jaeger exporter
@@ -14,12 +16,18 @@ exporters:
       insecure: true
   debug:
     verbosity: detailed
+  influxdb:
+    endpoint: influxdb:8086
+    v1_compatibility:
+      enabled: true
+      db: inspectit
+      username: admin
+      password: admin
 
 processors:
   batch:
 
   transform/extract-span-duration:
-    #error_mode: ignore
     trace_statements:
         - context: span
           statements:
@@ -27,21 +35,14 @@ processors:
             - set(attributes["end_time_unix_nano"], end_time_unix_nano)
             - set(attributes["duration_ms"], (end_time_unix_nano - start_time_unix_nano)/1000)
 
-extensions:
-  health_check:
-  pprof:
-  zpages:
-    endpoint: 0.0.0.0:55679
-
 service:
-  extensions: [pprof, zpages, health_check]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch, transform/extract-span-duration]
       exporters: [otlp/jaeger, debug]
     metrics:
-      receivers: [otlp]
+      receivers: [otlp, influxdb]
       exporters: [debug]
     logs:
       receivers: [otlp]
