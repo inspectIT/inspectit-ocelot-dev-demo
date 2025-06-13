@@ -41,9 +41,9 @@ service:
       receivers: [otlp]
       processors: [batch, transform/extract-span-duration]
       exporters: [otlp/jaeger, debug]
-    metrics:
-      receivers: [otlp, influxdb]
-      exporters: [debug]
+#    metrics:
+#      receivers: [otlp, influxdb]
+#      exporters: [debug]
     logs:
       receivers: [otlp]
       exporters: [debug]
