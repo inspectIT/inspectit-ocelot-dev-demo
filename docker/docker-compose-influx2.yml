@@ -1,0 +1,71 @@
+services:
+  # Collector for receiving, processing and exporting telemetry data
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.117.0
+    container_name: ocelot-dev-otel-collector
+    command: [ "--config=/etc/otel-collector-config.yml" ]
+    volumes:
+      - ./otel/otel-collector-config.yml:/etc/otel-collector-config.yml
+    ports:
+      - "1888:1888"   # pprof extension
+      - "13133:13133" # health_check extension
+      - "9411"        # Zipkin receiver
+      - "4317:4317"   # OTLP GRPC receiver
+      - "4318:4318"   # OTLP HTTP receiver
+      - "8088:8088"
+
+  # InfluxDB
+  # Time Series Database
+  influxdb:
+    image: influxdb:2.7.3
+    container_name: ocelot-dev-influxdb
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=inspectit
+      - DOCKER_INFLUXDB_INIT_ORG=inspectit
+      - DOCKER_INFLUXDB_INIT_BUCKET=inspectit
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=my-token
+    ports:
+      - 8086:8086
+
+  telegraf:
+    image: telegraf:1.33.2
+    container_name: ocelot-dev-telegraf
+    volumes:
+      - ./influx/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+    ports:
+      - 8085:8085
+
+  #  Jaeger
+  ## Collects and visualizes traces
+  jaeger:
+    image: jaegertracing/all-in-one:1.60.0
+    container_name: ocelot-dev-jaeger
+    ports:
+      - 16686:16686
+      - 14268:14268
+      - 14250:14250
+      #- 4317:4317   # OTLP GRPC receiver
+      #- 4318:4318   # OTLP HTTP receiver
+
+  #  Grafana
+  ## Dashboarding
+  grafana:
+    image: grafana/grafana:11.5.0
+    attach: false
+    container_name: ocelot-dev-grafana
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=TRUE
+      - GF_SECURITY_ADMIN_PASSWORD=demo
+      - GF_PATHS_PROVISIONING=/usr/share/grafana/custom/
+      - GF_INSTALL_PLUGINS=https://github.com/NovatecConsulting/novatec-service-dependency-graph-panel/releases/download/v4.2.0/novatec-sdg-panel.zip;novatec-sdg-panel
+    volumes:
+      - ./grafana/provisioning/influxdb:/usr/share/grafana/custom/
+      - ./grafana/provisioning/home-dashboard/home.json:/usr/share/grafana/public/dashboards/home.json
+    ports:
+      - 3000:3000
+    env_file:
+      - .env

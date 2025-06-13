@@ -132,12 +132,74 @@
             evt.preventDefault();
             OT.addVarToSpans("myUserID", getUserID());
             changePicture();
+            //getTags();
+            //putTags();
+            counter++;
         });
     });
 
+    function getTags() {
+        const xhr = new XMLHttpRequest();
+        const url = "http://localhost:9001/inspectit";
+
+        xhr.open("GET", url);
+        xhr.setRequestHeader("Session-Id", "my-very-awesome-session-id");
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    let receivedData = xhr.responseText; // Read received data
+                    console.info(receivedData);
+                } else {
+                    console.error("Error fetching data: ", xhr.status);
+                }
+            }
+        };
+        xhr.send();
+    }
+
+    function putTags() {
+        const data = [
+            { "key1": "123" },
+            { "newTag": "321" }
+        ]
+        const xhr = new XMLHttpRequest();
+        const url = "http://localhost:9001/inspectit";
+
+        xhr.open("PUT", url);
+        xhr.setRequestHeader("Session-Id", "my-very-awesome-session-id");
+
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    console.log("Data fetched successfully!");
+                } else {
+                    console.error("Error fetching data: ", xhr.status);
+                }
+            }
+        };
+        xhr.send(JSON.stringify(data));
+    }
+
     function changePicture() {
-        $.get( "/changePicture?alt=" + $(inspectITLogo).attr("alt"), function(data) {
-            $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
+        // $.get( "/changePicture?alt=" + $(inspectITLogo).attr("alt"), function(data) {
+        //     $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
+        // });
+        $.ajax({
+            url: "/changePicture",
+            type: "GET",
+            headers: {
+                "my-test-header": "TEST",
+                "my-other-header": "AnotherValue",
+                "correlation-context": "my-test-header=TESTY,my-test2-header=TES",
+                "Session-Id": "my-very-awesome-session-id"
+            },
+            data: {
+                alt: $(inspectITLogo).attr("alt")
+            },
+            success: function(data) {
+                $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
+            }
         });
     }
     function getUserID() {

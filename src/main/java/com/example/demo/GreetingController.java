@@ -51,7 +51,7 @@ public class GreetingController extends MyAbstract implements MyInterface {
     }
 
     @GetMapping(value="/changePicture", produces="application/json")
-    public ResponseEntity<String> view(@RequestParam String alt) {
+    public ResponseEntity<String> view(@RequestParam(name = "alt") String alt) {
         ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = requestAttributes.getRequest();
         String traceParent = request.getHeader("traceparent");

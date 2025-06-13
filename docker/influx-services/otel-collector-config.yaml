@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        max_recv_msg_size_mib: 100
+      http:
+        endpoint: 0.0.0.0:4318
+
+exporters:
+  influxdb:
+    endpoint: "http://influxdb:8086"
+    org: "my-org"
+    bucket: "my-bucket"
+    token: "my-token"
+    metrics_schema: telegraf-prometheus-v1
+
+  debug:
+    verbosity: detailed
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [influxdb, debug]

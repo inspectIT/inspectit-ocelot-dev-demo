@@ -2,7 +2,7 @@
 Demo application for local development. 
 
 Currently, this project uses the following versions:
-- inspectit-ocelot-agent & configuration-server: 2.6.10
+- inspectit-ocelot-agent & configuration-server: 2.6.11
 - EUM-server: 2.6.4
 - Demo Spring version: 3.2.0
 
@@ -32,7 +32,7 @@ for the web-UI.
 
 ### inspectit-ocelot
 
-Start the configuration-server via `java -jar inspectit-ocelot-configurationserver-2.6.10.jar`.
+Start the configuration-server via `java -jar inspectit-ocelot-configurationserver-2.6.11.jar`.
 You can reach the UI on port 8090.
 
 Start the EUM-server via `java -jar inspectit-ocelot-eum-server.2.6.4.jar`
@@ -55,7 +55,7 @@ You can start the demo application without an attached ocelot agent just like ev
 
 To start the application with an attached ocelot agent, you have to:
 - build a demo.jar via `gradle assemble`
-- start the demo via `java -javaagent:"<absolute-path-to-your-project>\inspectit-ocelot-dev-demo\inspectit-ocelot\inspectit-ocelot-agent-2.6.10.jar" -Dinspectit.service-name=my-demo-agent -Dinspectit.config.http.url=http://localhost:8090/api/v1/agent/configuration -jar <absolute-path-to-your-project>\inspectit-ocelot-dev-demo\build\libs\com.example.demo-0.0.1-SNAPSHOT.jar `
+- start the demo via `java -javaagent:"<absolute-path-to-your-project>\inspectit-ocelot-dev-demo\inspectit-ocelot\inspectit-ocelot-agent-2.6.11.jar" -Dinspectit.service-name=my-demo-agent -Dinspectit.config.http.url=http://localhost:8090/api/v1/agent/configuration -jar <absolute-path-to-your-project>\inspectit-ocelot-dev-demo\build\libs\com.example.demo-0.0.1-SNAPSHOT.jar `
 
 You can reach the main-page at http://localhost:8081
 
@@ -69,4 +69,3 @@ You can install the node_modules via: `yarn install --modules-folder src/main/re
 Please ensure you have installed `yarn`.
 
 See the [debugging docu](Debugging.md) to learn, how to debug the inspectit-ocelot agent locally.
-
