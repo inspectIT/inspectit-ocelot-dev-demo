@@ -13,8 +13,8 @@
     <script src="http://localhost:8080/boomerang/boomerang.js"></script>
     <script src="http://localhost:8080/boomerang/plugins/navtiming.js"></script>
     <script src="http://localhost:8080/boomerang/plugins/auto-xhr.js"></script>
+    <script src="http://localhost:8080/boomerang/plugins/restiming.js"></script>
     <script src="http://localhost:8080/boomerang/plugins/boomerang-opentelemetry.js"></script>
-<!--    <script src="http://localhost:8000/boomerang-opentelemetry.dev.js"></script>-->
 
     <script>
         BOOMR.init({
@@ -182,26 +182,11 @@
     }
 
     function changePicture() {
-        // $.get( "/changePicture?alt=" + $(inspectITLogo).attr("alt"), function(data) {
-        //     $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
-        // });
-        $.ajax({
-            url: "/changePicture",
-            type: "GET",
-            headers: {
-                "my-test-header": "TEST",
-                "my-other-header": "AnotherValue",
-                "correlation-context": "my-test-header=TESTY,my-test2-header=TES",
-                "Session-Id": "my-very-awesome-session-id"
-            },
-            data: {
-                alt: $(inspectITLogo).attr("alt")
-            },
-            success: function(data) {
-                $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
-            }
-        });
+         $.get( "/changePicture?alt=" + $(inspectITLogo).attr("alt"), function(data) {
+             $('#inspectITLogo').attr("src", data.src).attr("alt", data.alt);
+         });
     }
+    
     function getUserID() {
         return "1234";
     }
